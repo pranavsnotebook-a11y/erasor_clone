@@ -1,15 +1,12 @@
 import { FileListContext } from '@/app/_context/FilesListContext'
-import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs';
-import { Archive, MoreHorizontal } from 'lucide-react';
+import { useAuth } from '@/app/_context/AuthContext';
+import { Archive, MoreHorizontal, User } from 'lucide-react';
 import moment from 'moment';
-import Image from 'next/image';
 import React, { useContext, useEffect, useState } from 'react'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useRouter } from 'next/navigation';
@@ -28,7 +25,7 @@ function FileList() {
 
   const {fileList_,setFileList_}=useContext(FileListContext);
   const [fileList,setFileList]=useState<any>();
-  const {user}:any=useKindeBrowserClient();
+  const { user } = useAuth();
   const router=useRouter();
   useEffect(()=>{
     fileList_&&setFileList(fileList_);
@@ -64,12 +61,9 @@ function FileList() {
         {moment(file._creationTime).format('DD MMM YYYY')}
         </td>
         <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-         {user&& <Image src= {user?.picture}
-          alt='user'
-          width={30}
-          height={30}
-          className='rounded-full'
-          />}
+         {user && <div className='w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center'>
+            <User className='h-4 w-4 text-white'/>
+          </div>}
         </td>
         <td className="whitespace-nowrap px-4 py-2 text-gray-700">
          

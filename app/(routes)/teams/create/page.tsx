@@ -1,8 +1,10 @@
 "use client"
+export const dynamic = 'force-dynamic';
+
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { api } from '@/convex/_generated/api'
-import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
+import { useAuth } from '@/app/_context/AuthContext'
 import { useMutation } from 'convex/react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
@@ -13,12 +15,13 @@ function CreateTeam() {
 
   const [teamName,setTeamName]=useState('');
   const createTeam=useMutation(api.teams.createTeam);
-  const {user}:any=useKindeBrowserClient();
+  const { user } = useAuth();
   const router=useRouter();
   const createNewTeam=()=>{
+    if (!user?.email) return;
     createTeam({
       teamName:teamName,
-      createdBy:user?.email
+      createdBy:user.email
     }).then(resp=>{
       console.log(resp);
       if(resp)
@@ -40,7 +43,7 @@ function CreateTeam() {
         <div className='mt-7 w-[40%]'>
           <label className='text-gray-500'>Team Name</label>
           <Input placeholder='Team Name'
-           className='mt-3' 
+           className='mt-3'
            onChange={(e)=>setTeamName(e.target.value)}
            />
         </div>

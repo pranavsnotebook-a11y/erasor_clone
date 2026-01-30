@@ -1,6 +1,5 @@
-
-import { LoginLink, RegisterLink } from '@kinde-oss/kinde-auth-nextjs'
 import Image from 'next/image'
+import Link from 'next/link'
 import React from 'react'
 
 function Header() {
@@ -35,29 +34,29 @@ function Header() {
             <a className="text-white transition hover:text-gray-100/75" href="#"> Projects </a>
           </li>
 
-        
+
         </ul>
       </nav>
 
       <div className="flex items-center gap-4">
         <div className="sm:flex sm:gap-4">
-          <div
-            className="block rounded-md  px-5 py-2.5 text-sm font-medium 
+          <Link
+            href="/login"
+            className="block rounded-md  px-5 py-2.5 text-sm font-medium
             text-white transition "
-           
           >
-            <LoginLink postLoginRedirectURL="/dashboard"> Login</LoginLink>
-          </div>
+            Login
+          </Link>
 
-          <div
-            className="hidden rounded-md bg-gray-100 
+          <Link
+            href="/login"
+            className="hidden rounded-md bg-gray-100
             px-5 py-2.5 text-sm font-medium
              text-black transition
               hover:text-slate-800 sm:block"
-           
           >
-          <RegisterLink>Register</RegisterLink>  
-          </div>
+            Get Started
+          </Link>
         </div>
 
         <button

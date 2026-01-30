@@ -1,6 +1,8 @@
 "use client"
+export const dynamic = 'force-dynamic';
+
 import { api } from '@/convex/_generated/api';
-import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs';
+import { useAuth } from '@/app/_context/AuthContext';
 import { useConvex } from 'convex/react';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
@@ -15,7 +17,7 @@ function DashboardLayout(
       }>
 ) {
     const convex=useConvex();
-    const {user}:any=useKindeBrowserClient();
+    const { user } = useAuth();
     const [fileList_,setFileList_]=useState();
     const router=useRouter();
     useEffect(()=>{
@@ -23,8 +25,9 @@ function DashboardLayout(
     },[user])
 
     const checkTeam=async()=>{
+        if (!user?.email) return;
         const result=await convex.query(api.teams.getTeam,
-            {email:user?.email});
+            {email:user.email});
 
         if(!result?.length)
         {
@@ -44,7 +47,7 @@ function DashboardLayout(
           </div>
       </div>
       </FileListContext.Provider>
-     
+
       </div>
   )
 }

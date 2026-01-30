@@ -1,4 +1,4 @@
-import { ChevronDown, LayoutGrid, LogOut, Settings, Users } from 'lucide-react'
+import { ChevronDown, LayoutGrid, LogOut, Settings, Users, User } from 'lucide-react'
 import Image from 'next/image'
 import React, { useEffect, useState } from 'react'
 import {
@@ -6,7 +6,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
-import { LogoutLink } from '@kinde-oss/kinde-auth-nextjs'
+import { useAuth } from '@/app/_context/AuthContext'
 import { Separator } from '@/components/ui/separator'
 import { useConvex } from 'convex/react'
 import { api } from '@/convex/_generated/api'
@@ -19,6 +19,7 @@ export interface TEAM{
     _id:String
 }
 function SideNavTopSection({user,setActiveTeamInfo}:any) {
+    const { logout } = useAuth();
     const menu=[
         {
             id:1,
@@ -68,7 +69,7 @@ function SideNavTopSection({user,setActiveTeamInfo}:any) {
                     <Image src='/logo-1.png' alt='logo'
                         width={40}
                         height={40} />
-                    <h2 className='flex gap-2 
+                    <h2 className='flex gap-2
                     items-center
       font-bold text-[17px]
       '>{activeTeam?.teamName}
@@ -89,7 +90,7 @@ function SideNavTopSection({user,setActiveTeamInfo}:any) {
                          onClick={()=>setActiveTeam(team)}
                         >{team.teamName}</h2>
                     ))}
-                    
+
                 </div>
                 <Separator className='mt-2 bg-slate-100'/>
                 {/* Option Section  */}
@@ -101,23 +102,21 @@ function SideNavTopSection({user,setActiveTeamInfo}:any) {
                             <item.icon className='h-4 w-4'/>
                             {item.name}</h2>
                     ))}
-                    <LogoutLink>
-                    <h2 className='flex gap-2 items-center
-                        p-2 hover:bg-gray-100 rounded-lg cursor-pointer text-sm'>
+                    <h2
+                        className='flex gap-2 items-center
+                        p-2 hover:bg-gray-100 rounded-lg cursor-pointer text-sm'
+                        onClick={()=>logout()}>
                             <LogOut className='h-4 w-4'/>
                             Logout</h2>
-                        </LogoutLink>
                 </div>
                 <Separator className='mt-2 bg-slate-100'/>
                 {/* User Info Section  */}
                {user&& <div className='mt-2 flex gap-2 items-center'>
-                    <Image src={user?.picture} alt='user'
-                    width={30}
-                    height={30}
-                    className='rounded-full'
-                    />
+                    <div className='w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center'>
+                        <User className='h-4 w-4 text-white'/>
+                    </div>
                     <div>
-                        <h2 className='text-[14px] font-bold'>{user?.given_name} {user?.family_name}</h2>
+                        <h2 className='text-[14px] font-bold'>{user?.name}</h2>
                         <h2 className='text-[12px] text-gray-500'>{user?.email}</h2>
 
                     </div>
