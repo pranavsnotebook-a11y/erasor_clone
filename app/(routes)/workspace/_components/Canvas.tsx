@@ -183,7 +183,6 @@ function Canvas({onSaveTrigger,fileId,fileData}:{onSaveTrigger:any,fileId:any,fi
             </MainMenu>
           </Excalidraw>}
         </div>
-      </>
   )
 }
 
