@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react'
-import { Excalidraw, MainMenu } from "@excalidraw/excalidraw";
+import { Excalidraw, MainMenu, WelcomeScreen } from "@excalidraw/excalidraw";
 import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 import { FILE } from '../../dashboard/_components/FileList';
 import { useMutation } from 'convex/react';
@@ -162,10 +162,11 @@ function Canvas({onSaveTrigger,fileId,fileData}:{onSaveTrigger:any,fileId:any,fi
               loadScene: false,
               export: false,
               toggleTheme: false
-            },
-            welcomeScreen: false
+            }
           }}
         >
+          {/* Empty WelcomeScreen to disable default hints */}
+          <WelcomeScreen />
           <MainMenu>
             <MainMenu.DefaultItems.ClearCanvas/>
             <MainMenu.DefaultItems.SaveAsImage/>
