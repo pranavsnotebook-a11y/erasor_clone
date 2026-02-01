@@ -94,7 +94,7 @@ h6.ce-header{
   }
 }
 
-/* Excalidraw overrides - force horizontal toolbar like Eraser.io */
+/* Excalidraw overrides - clean UI */
 
 /* Hide the "Shapes" title text */
 .excalidraw h2.visually-hidden,
@@ -105,42 +105,6 @@ h6.ce-header{
 /* Hide keyboard shortcut indicators (1, 2, 3, etc.) */
 .excalidraw .ToolIcon__keybinding {
   display: none !important;
-}
-
-/* Force toolbar to horizontal layout at top */
-.excalidraw .App-toolbar,
-.excalidraw .App-toolbar--mobile {
-  flex-direction: row !important;
-  position: fixed !important;
-  top: 60px !important;
-  left: 50% !important;
-  right: auto !important;
-  bottom: auto !important;
-  transform: translateX(-25%) !important;
-  width: auto !important;
-  max-width: 90% !important;
-  padding: 8px 12px !important;
-  gap: 4px !important;
-  z-index: 100 !important;
-}
-
-/* Make tool icons horizontal */
-.excalidraw .App-toolbar .Stack,
-.excalidraw .App-toolbar--mobile .Stack {
-  flex-direction: row !important;
-  flex-wrap: wrap !important;
-  gap: 2px !important;
-}
-
-/* Hide radio buttons next to tools */
-.excalidraw .ToolIcon_type_radio,
-.excalidraw input[type="radio"] + .ToolIcon__icon {
-  display: none !important;
-}
-
-/* Show only the tool icon buttons */
-.excalidraw .ToolIcon {
-  display: inline-flex !important;
 }
 
 /* Ensure canvas takes full space */
