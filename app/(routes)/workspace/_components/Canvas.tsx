@@ -138,51 +138,40 @@ function Canvas({onSaveTrigger,fileId,fileData}:{onSaveTrigger:any,fileId:any,fi
     }, []);
 
     return (
-        <div
-          ref={containerRef}
-          className="excalidraw-container relative w-full h-full"
-          style={{
-            touchAction: 'none',
-            overflow: 'hidden'
-          }}
-        >
-          {/* Optional preview layer for extra-low latency stroke rendering */}
-          {ENABLE_PREVIEW_LAYER && <StrokePreviewLayer enabled={true} />}
-          {fileData && <Excalidraw
-            excalidrawAPI={(api) => { excalidrawAPIRef.current = api; }}
-            theme='light'
-            initialData={{
-              elements: fileData?.whiteboard && JSON.parse(fileData?.whiteboard)
-            }}
-            onChange={handleChange}
-            UIOptions={{
-              canvasActions: {
-                saveToActiveFile: false,
-                loadScene: false,
-                export: false,
-                toggleTheme: false
-              }
-            }}
-          >
-            {/* Custom empty WelcomeScreen to completely disable all hints */}
-            <WelcomeScreen>
-              <WelcomeScreen.Hints.MenuHint>
-                <></>
-              </WelcomeScreen.Hints.MenuHint>
-              <WelcomeScreen.Hints.ToolbarHint>
-                <></>
-              </WelcomeScreen.Hints.ToolbarHint>
-              <WelcomeScreen.Hints.HelpHint>
-                <></>
-              </WelcomeScreen.Hints.HelpHint>
-            </WelcomeScreen>
-            <MainMenu>
-              <MainMenu.DefaultItems.ClearCanvas/>
-              <MainMenu.DefaultItems.SaveAsImage/>
-              <MainMenu.DefaultItems.ChangeCanvasBackground/>
-            </MainMenu>
-          </Excalidraw>}
-        </div>
+    <div ref={containerRef} className="relative" style={{ height: "670px", touchAction: 'none' }}>
+   {/* Optional preview layer for extra-low latency stroke rendering */}
+   {ENABLE_PREVIEW_LAYER && <StrokePreviewLayer enabled={true} />}
+   {fileData&& <Excalidraw
+    excalidrawAPI={(api) => { excalidrawAPIRef.current = api; }}
+    theme='light'
+    initialData={{
+        elements:fileData?.whiteboard&&JSON.parse(fileData?.whiteboard)
+    }}
+    onChange={handleChange}
+    UIOptions={{
+        canvasActions:{
+            saveToActiveFile:false,
+            loadScene:false,
+            export:false,
+            toggleTheme:false
+        }
+    }}
+    >
+        <MainMenu>
+            <MainMenu.DefaultItems.ClearCanvas/>
+            <MainMenu.DefaultItems.SaveAsImage/>
+            <MainMenu.DefaultItems.ChangeCanvasBackground/>
+        </MainMenu>
+        <WelcomeScreen>
+            <WelcomeScreen.Hints.MenuHint/>
+            <WelcomeScreen.Hints.MenuHint/>
+            <WelcomeScreen.Hints.ToolbarHint/>
+            <WelcomeScreen.Center>
+                <WelcomeScreen.Center.MenuItemHelp/>
+            </WelcomeScreen.Center>
+        </WelcomeScreen>
+        </Excalidraw>}
+  </div>
   )
 }
 

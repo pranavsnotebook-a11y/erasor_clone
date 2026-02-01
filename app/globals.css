@@ -93,24 +93,3 @@ h6.ce-header{
     @apply bg-background text-foreground;
   }
 }
-
-/* Excalidraw overrides - clean UI */
-
-/* Hide the "Shapes" title text */
-.excalidraw h2.visually-hidden,
-.excalidraw [id*="shapes-title"] {
-  display: none !important;
-}
-
-/* Hide keyboard shortcut indicators (1, 2, 3, etc.) */
-.excalidraw .ToolIcon__keybinding {
-  display: none !important;
-}
-
-/* Ensure canvas takes full space */
-.excalidraw-container,
-.excalidraw,
-.excalidraw .excalidraw-container {
-  width: 100% !important;
-  height: 100% !important;
-}
