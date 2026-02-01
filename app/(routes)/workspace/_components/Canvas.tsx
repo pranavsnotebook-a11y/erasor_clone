@@ -5,6 +5,11 @@ import { FILE } from '../../dashboard/_components/FileList';
 import { useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { configureForStylus } from './usePointerOptimization';
+import StrokePreviewLayer from './StrokePreviewLayer';
+
+// Enable preview layer for extra-low latency (renders strokes immediately)
+// This can be enabled if Excalidraw's native rendering is still too slow
+const ENABLE_PREVIEW_LAYER = false;
 
 function Canvas({onSaveTrigger,fileId,fileData}:{onSaveTrigger:any,fileId:any,fileData:FILE}) {
 
@@ -55,7 +60,9 @@ function Canvas({onSaveTrigger,fileId,fileData}:{onSaveTrigger:any,fileId:any,fi
     }, []);
 
     return (
-    <div ref={containerRef} style={{ height: "670px", touchAction: 'none' }}>
+    <div ref={containerRef} className="relative" style={{ height: "670px", touchAction: 'none' }}>
+   {/* Optional preview layer for extra-low latency stroke rendering */}
+   {ENABLE_PREVIEW_LAYER && <StrokePreviewLayer enabled={true} />}
    {fileData&& <Excalidraw
     excalidrawAPI={(api) => { excalidrawAPIRef.current = api; }}
     theme='light'
