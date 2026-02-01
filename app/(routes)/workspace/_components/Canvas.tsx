@@ -17,6 +17,9 @@ function Canvas({onSaveTrigger,fileId,fileData}:{onSaveTrigger:any,fileId:any,fi
     const excalidrawAPIRef = useRef<ExcalidrawImperativeAPI | null>(null);
     const isDrawingRef = useRef(false);
     const containerRef = useRef<HTMLDivElement>(null);
+    const pendingElementsRef = useRef<any>(null);
+    const syncTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const wasDrawingRef = useRef(false);
 
     // Configure container for optimal stylus input
     useEffect(() => {
@@ -42,21 +45,63 @@ function Canvas({onSaveTrigger,fileId,fileData}:{onSaveTrigger:any,fileId:any,fi
         }
     }
 
-    // Throttled onChange handler - only updates when not actively drawing
+    // Sync pending elements to React state (called after drawing ends)
+    const syncPendingElements = useCallback(() => {
+        if (pendingElementsRef.current) {
+            setWhiteBoardData(pendingElementsRef.current);
+            pendingElementsRef.current = null;
+        }
+    }, []);
+
+    // Optimized onChange handler - defers React state sync during drawing
     const handleChange = useCallback((excalidrawElements: any, appState: any, files: any) => {
-        // Check if user is currently drawing (pen/touch down)
+        // Detect drawing state from Excalidraw's appState
         const isCurrentlyDrawing = appState?.draggingElement !== null ||
                                    appState?.resizingElement !== null ||
                                    appState?.isResizing ||
-                                   appState?.isRotating;
+                                   appState?.isRotating ||
+                                   appState?.editingElement !== null;
 
         isDrawingRef.current = isCurrentlyDrawing;
 
-        // Only update React state when NOT actively drawing
-        // This prevents React re-renders during stroke input
-        if (!isCurrentlyDrawing) {
-            setWhiteBoardData(excalidrawElements);
+        if (isCurrentlyDrawing) {
+            // Store elements but don't sync to React during drawing
+            // This completely eliminates React re-renders while drawing
+            pendingElementsRef.current = excalidrawElements;
+            wasDrawingRef.current = true;
+
+            // Clear any pending sync timeout
+            if (syncTimeoutRef.current) {
+                clearTimeout(syncTimeoutRef.current);
+                syncTimeoutRef.current = null;
+            }
+        } else {
+            // Drawing just ended or this is a non-drawing change
+            if (wasDrawingRef.current) {
+                // Stroke just completed - sync after a micro-delay
+                // This ensures Excalidraw has fully committed the stroke
+                wasDrawingRef.current = false;
+                pendingElementsRef.current = excalidrawElements;
+
+                syncTimeoutRef.current = setTimeout(() => {
+                    syncPendingElements();
+                    syncTimeoutRef.current = null;
+                }, 16); // One frame delay
+            } else {
+                // Non-drawing change (undo, redo, tool change, etc.)
+                // Sync immediately for responsive UI
+                setWhiteBoardData(excalidrawElements);
+            }
         }
+    }, [syncPendingElements]);
+
+    // Cleanup timeouts on unmount
+    useEffect(() => {
+        return () => {
+            if (syncTimeoutRef.current) {
+                clearTimeout(syncTimeoutRef.current);
+            }
+        };
     }, []);
 
     return (
