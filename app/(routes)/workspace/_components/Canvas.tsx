@@ -32,8 +32,9 @@ function Canvas({onSaveTrigger,fileId,fileData}:{onSaveTrigger:any,fileId:any,fi
             loadScene:false,
             export:false,
             toggleTheme:false
-
-        }
+        },
+        // Force desktop-style toolbar by setting breakpoint to 0
+        dockedSidebarBreakpoint: 0
     }}
     >
         <MainMenu>
