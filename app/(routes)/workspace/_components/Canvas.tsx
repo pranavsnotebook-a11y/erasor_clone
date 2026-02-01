@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react'
-import { Excalidraw, MainMenu, WelcomeScreen } from "@excalidraw/excalidraw";
+import { Excalidraw, MainMenu } from "@excalidraw/excalidraw";
 import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 import { FILE } from '../../dashboard/_components/FileList';
 import { useMutation } from 'convex/react';
@@ -162,14 +162,6 @@ function Canvas({onSaveTrigger,fileId,fileData}:{onSaveTrigger:any,fileId:any,fi
             <MainMenu.DefaultItems.SaveAsImage/>
             <MainMenu.DefaultItems.ChangeCanvasBackground/>
         </MainMenu>
-        <WelcomeScreen>
-            <WelcomeScreen.Hints.MenuHint/>
-            <WelcomeScreen.Hints.MenuHint/>
-            <WelcomeScreen.Hints.ToolbarHint/>
-            <WelcomeScreen.Center>
-                <WelcomeScreen.Center.MenuItemHelp/>
-            </WelcomeScreen.Center>
-        </WelcomeScreen>
         </Excalidraw>}
   </div>
   )
