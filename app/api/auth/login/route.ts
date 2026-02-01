@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 
 export async function POST(request: NextRequest) {
   const { username, password } = await request.json();
@@ -14,10 +13,12 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  if (username === validUsername && password === validPassword) {
+  // Trim whitespace and compare
+  if (username?.trim() === validUsername?.trim() && password?.trim() === validPassword?.trim()) {
+    const response = NextResponse.json({ success: true });
+
     // Set auth cookie with no expiry (max age = 100 years)
-    const cookieStore = await cookies();
-    cookieStore.set('auth_token', 'authenticated', {
+    response.cookies.set('auth_token', 'authenticated', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
@@ -25,7 +26,7 @@ export async function POST(request: NextRequest) {
       path: '/',
     });
 
-    return NextResponse.json({ success: true });
+    return response;
   }
 
   return NextResponse.json(

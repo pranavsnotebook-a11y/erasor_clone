@@ -18,17 +18,24 @@ function CreateTeam() {
   const { user } = useAuth();
   const router=useRouter();
   const createNewTeam=()=>{
-    if (!user?.email) return;
+    console.log('createNewTeam called, user:', user);
+    if (!user?.email) {
+      console.log('No user email, returning early');
+      return;
+    }
+    console.log('Creating team with email:', user.email);
     createTeam({
       teamName:teamName,
       createdBy:user.email
     }).then(resp=>{
-      console.log(resp);
+      console.log('Team create response:', resp);
       if(resp)
       {
           router.push('/dashboard')
           toast('Team created successfully!!!')
       }
+    }).catch(err => {
+      console.error('Team create error:', err);
     })
   }
   return (

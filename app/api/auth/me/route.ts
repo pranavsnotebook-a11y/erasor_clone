@@ -1,12 +1,12 @@
-import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET() {
-  const cookieStore = await cookies();
-  const authToken = cookieStore.get('auth_token');
+export const dynamic = 'force-dynamic';
+
+export async function GET(request: NextRequest) {
+  const authToken = request.cookies.get('auth_token');
 
   if (authToken?.value === 'authenticated') {
-    return NextResponse.json({
+    const response = NextResponse.json({
       user: {
         email: 'user@erasor.local',
         name: 'User',
@@ -15,7 +15,11 @@ export async function GET() {
         family_name: '',
       }
     });
+    response.headers.set('Cache-Control', 'no-store, max-age=0');
+    return response;
   }
 
-  return NextResponse.json({ user: null }, { status: 401 });
+  const response = NextResponse.json({ user: null }, { status: 401 });
+  response.headers.set('Cache-Control', 'no-store, max-age=0');
+  return response;
 }

@@ -26,14 +26,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // Check if user is authenticated
     const checkAuth = async () => {
+      console.log('AuthContext: checking auth...');
       try {
-        const res = await fetch('/api/auth/me');
+        const res = await fetch('/api/auth/me', {
+          credentials: 'include',
+        });
+        console.log('AuthContext: response status:', res.status);
         if (res.ok) {
           const data = await res.json();
+          console.log('AuthContext: user loaded:', data.user?.email);
           setUser(data.user);
+        } else {
+          console.log('AuthContext: not authenticated');
         }
       } catch (error) {
-        console.error('Auth check failed:', error);
+        console.error('AuthContext: auth check failed:', error);
       } finally {
         setIsLoading(false);
       }
