@@ -170,3 +170,24 @@ h6.ce-header{
 .excalidraw [class*="App-toolbar"] {
   display: flex !important;
 }
+
+/* Force hide the visually-hidden h2 containing "Shapes" */
+.excalidraw h2.visually-hidden,
+.excalidraw [class*="visually-hidden"],
+.excalidraw .shapes-title,
+.excalidraw [id*="shapes-title"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
+  position: absolute !important;
+  pointer-events: none !important;
+}
+
+/* Hide mobile toolbar variant elements that show Shapes label */
+.excalidraw .App-toolbar--mobile h2,
+.excalidraw .App-toolbar--mobile [class*="title"],
+.excalidraw.excalidraw--mobile h2 {
+  display: none !important;
+}
