@@ -138,7 +138,7 @@ function Canvas({onSaveTrigger,fileId,fileData}:{onSaveTrigger:any,fileId:any,fi
     }, []);
 
     return (
-    <div ref={containerRef} className="relative" style={{ height: "670px", touchAction: 'none' }}>
+    <div ref={containerRef} className="relative w-full h-full" style={{ touchAction: 'none' }}>
    {/* Optional preview layer for extra-low latency stroke rendering */}
    {ENABLE_PREVIEW_LAYER && <StrokePreviewLayer enabled={true} />}
    {fileData&& <Excalidraw

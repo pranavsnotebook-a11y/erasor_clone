@@ -27,17 +27,16 @@ function Workspace({params}:any) {
       <WorkspaceHeader onSave={()=>setTriggerSave(!triggerSave)} />
 
       {/* Workspace Layout  */}
-      <div className='grid grid-cols-1
-      md:grid-cols-2'>
+      <div className='grid grid-cols-1 md:grid-cols-2' style={{ height: 'calc(100vh - 60px)' }}>
         {/* Document  */}
-          <div className=' h-screen'>
+          <div className='h-full overflow-auto'>
             <Editor onSaveTrigger={triggerSave}
             fileId={params.fileId}
             fileData={fileData}
             />
           </div>
         {/* Whiteboard/canvas  */}
-        <div className=' h-screen border-l'>
+        <div className='h-full border-l'>
             <Canvas
              onSaveTrigger={triggerSave}
              fileId={params.fileId}
