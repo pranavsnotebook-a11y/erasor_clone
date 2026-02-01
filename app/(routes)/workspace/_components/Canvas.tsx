@@ -4,12 +4,21 @@ import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 import { FILE } from '../../dashboard/_components/FileList';
 import { useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
+import { configureForStylus } from './usePointerOptimization';
 
 function Canvas({onSaveTrigger,fileId,fileData}:{onSaveTrigger:any,fileId:any,fileData:FILE}) {
 
     const [whiteBoardData,setWhiteBoardData]=useState<any>();
     const excalidrawAPIRef = useRef<ExcalidrawImperativeAPI | null>(null);
     const isDrawingRef = useRef(false);
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    // Configure container for optimal stylus input
+    useEffect(() => {
+        if (containerRef.current) {
+            configureForStylus(containerRef.current);
+        }
+    }, []);
 
     const updateWhiteboard=useMutation(api.files.updateWhiteboard)
 
@@ -46,7 +55,7 @@ function Canvas({onSaveTrigger,fileId,fileData}:{onSaveTrigger:any,fileId:any,fi
     }, []);
 
     return (
-    <div style={{ height: "670px" }}>
+    <div ref={containerRef} style={{ height: "670px", touchAction: 'none' }}>
    {fileData&& <Excalidraw
     excalidrawAPI={(api) => { excalidrawAPIRef.current = api; }}
     theme='light'
