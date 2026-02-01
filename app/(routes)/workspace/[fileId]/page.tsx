@@ -26,18 +26,18 @@ function Workspace({params}:any) {
       <PerformanceMonitor enabled={true} position="bottom-right" />
       <WorkspaceHeader onSave={()=>setTriggerSave(!triggerSave)} />
 
-      {/* Workspace Layout - side by side like Eraser.io */}
-      {/* Use 1/3 for editor, 2/3 for canvas to give Excalidraw enough width for horizontal toolbar */}
-      <div className='grid grid-cols-1 lg:grid-cols-3'>
-        {/* Document - 1/3 width */}
-          <div className='h-screen'>
+      {/* Workspace Layout  */}
+      <div className='grid grid-cols-1
+      md:grid-cols-2'>
+        {/* Document  */}
+          <div className=' h-screen'>
             <Editor onSaveTrigger={triggerSave}
             fileId={params.fileId}
             fileData={fileData}
             />
           </div>
-        {/* Whiteboard/canvas - 2/3 width */}
-        <div className='h-screen border-l lg:col-span-2'>
+        {/* Whiteboard/canvas  */}
+        <div className=' h-screen border-l'>
             <Canvas
              onSaveTrigger={triggerSave}
              fileId={params.fileId}

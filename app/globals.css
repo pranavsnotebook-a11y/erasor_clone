@@ -93,15 +93,3 @@ h6.ce-header{
     @apply bg-background text-foreground;
   }
 }
-
-/* Excalidraw - clean up mobile toolbar UI */
-.excalidraw .ToolIcon__keybinding,
-.excalidraw h2.visually-hidden,
-.excalidraw [id*="shapes-title"],
-.excalidraw .HelpButton,
-.excalidraw .help-icon,
-.excalidraw .welcome-screen-menu-item,
-.excalidraw [class*="welcome-screen"],
-.excalidraw .layer-ui__wrapper__top-left {
-  display: none !important;
-}
