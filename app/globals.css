@@ -112,6 +112,36 @@ h6.ce-header{
   display: none !important;
 }
 
+/* Hide all mobile/sidebar UI elements - Shapes checkbox, Library, lock, hand icons */
+.excalidraw .layer-ui__wrapper__top-left,
+.excalidraw [class*="layer-ui__wrapper__top-left"],
+.excalidraw .library-button,
+.excalidraw [class*="library-button"],
+.excalidraw .zen-mode-transition,
+.excalidraw [class*="zen-mode"],
+.excalidraw .scroll-back-to-content,
+.excalidraw [data-testid="image-export-button"],
+.excalidraw [data-testid="load-button"],
+.excalidraw .encrypted-icon,
+.excalidraw [class*="encrypted"],
+.excalidraw .UserList,
+.excalidraw [class*="UserList"],
+.excalidraw .HelpButton,
+.excalidraw [class*="HelpButton"],
+.excalidraw .welcome-screen-decor,
+.excalidraw [class*="welcome-screen"] {
+  display: none !important;
+}
+
+/* Hide the sidebar panel container entirely */
+.excalidraw .layer-ui__wrapper aside,
+.excalidraw aside.layer-ui__sidebar,
+.excalidraw [class*="sidebar"],
+.excalidraw .Sidebar,
+.excalidraw .mobile-misc-tools-container {
+  display: none !important;
+}
+
 /* Ensure canvas takes full space */
 .excalidraw-container,
 .excalidraw,
