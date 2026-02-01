@@ -18,10 +18,7 @@ function Canvas({onSaveTrigger,fileId,fileData}:{onSaveTrigger:any,fileId:any,fi
 
     const [whiteBoardData,setWhiteBoardData]=useState<any>();
     const excalidrawAPIRef = useRef<any>(null);
-    const isDrawingRef = useRef(false);
     const containerRef = useRef<HTMLDivElement>(null);
-    const pendingElementsRef = useRef<any>(null);
-    const syncTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const wasDrawingRef = useRef(false);
 
     // Configure container for optimal stylus input
@@ -70,71 +67,43 @@ function Canvas({onSaveTrigger,fileId,fileData}:{onSaveTrigger:any,fileId:any,fi
         }
     }
 
-    // Sync pending elements to React state (called after drawing ends)
-    const syncPendingElements = useCallback(() => {
-        if (pendingElementsRef.current) {
-            setWhiteBoardData(pendingElementsRef.current);
-            pendingElementsRef.current = null;
-        }
-    }, []);
-
-    // Optimized onChange handler - defers React state sync during drawing
+    // Ultra-optimized onChange handler - minimal work during drawing
     const handleChange = useCallback((excalidrawElements: any, appState: any, files: any) => {
-        // Detect drawing state from Excalidraw's appState
-        const isCurrentlyDrawing = appState?.draggingElement !== null ||
-                                   appState?.resizingElement !== null ||
-                                   appState?.isResizing ||
-                                   appState?.isRotating ||
-                                   appState?.editingElement !== null;
+        // FAST PATH: Check drawing state with minimal property access
+        const dragging = appState?.draggingElement;
 
-        isDrawingRef.current = isCurrentlyDrawing;
-
-        if (isCurrentlyDrawing) {
-            // Store elements but don't sync to React during drawing
-            // This completely eliminates React re-renders while drawing
-            pendingElementsRef.current = excalidrawElements;
+        if (dragging !== null) {
+            // DRAWING IN PROGRESS - Do absolutely nothing except mark state
+            // This is the hot path - must be as fast as possible
             wasDrawingRef.current = true;
+            return; // Exit immediately - don't store, don't process
+        }
 
-            // Clear any pending sync timeout
-            if (syncTimeoutRef.current) {
-                clearTimeout(syncTimeoutRef.current);
-                syncTimeoutRef.current = null;
+        // NOT DRAWING - Check if we just finished a stroke
+        if (wasDrawingRef.current) {
+            // Stroke just completed
+            wasDrawingRef.current = false;
+
+            // Use requestIdleCallback for non-critical updates
+            if ('requestIdleCallback' in window) {
+                (window as any).requestIdleCallback(() => {
+                    setWhiteBoardData(excalidrawElements);
+                    scheduleSave(excalidrawElements);
+                }, { timeout: 100 });
+            } else {
+                // Fallback: defer to next frame
+                requestAnimationFrame(() => {
+                    setWhiteBoardData(excalidrawElements);
+                    scheduleSave(excalidrawElements);
+                });
             }
         } else {
-            // Drawing just ended or this is a non-drawing change
-            if (wasDrawingRef.current) {
-                // Stroke just completed - sync after a micro-delay
-                // This ensures Excalidraw has fully committed the stroke
-                wasDrawingRef.current = false;
-                pendingElementsRef.current = excalidrawElements;
-
-                syncTimeoutRef.current = setTimeout(() => {
-                    syncPendingElements();
-                    syncTimeoutRef.current = null;
-
-                    // Schedule auto-save after stroke completion
-                    // This runs in background without blocking render
-                    scheduleSave(excalidrawElements);
-                }, 16); // One frame delay
-            } else {
-                // Non-drawing change (undo, redo, tool change, etc.)
-                // Sync immediately for responsive UI
-                setWhiteBoardData(excalidrawElements);
-
-                // Schedule auto-save for non-drawing changes too
-                scheduleSave(excalidrawElements);
-            }
+            // Non-drawing change (undo, redo, tool change, etc.)
+            setWhiteBoardData(excalidrawElements);
+            scheduleSave(excalidrawElements);
         }
-    }, [syncPendingElements, scheduleSave]);
+    }, [scheduleSave]);
 
-    // Cleanup timeouts on unmount
-    useEffect(() => {
-        return () => {
-            if (syncTimeoutRef.current) {
-                clearTimeout(syncTimeoutRef.current);
-            }
-        };
-    }, []);
 
     return (
     <div ref={containerRef} className="relative" style={{ height: "670px", touchAction: 'none' }}>
