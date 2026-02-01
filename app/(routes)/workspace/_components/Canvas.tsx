@@ -165,8 +165,18 @@ function Canvas({onSaveTrigger,fileId,fileData}:{onSaveTrigger:any,fileId:any,fi
             }
           }}
         >
-          {/* Empty WelcomeScreen to disable default hints */}
-          <WelcomeScreen />
+          {/* Custom empty WelcomeScreen to completely disable all hints */}
+          <WelcomeScreen>
+            <WelcomeScreen.Hints.MenuHint>
+              <></>
+            </WelcomeScreen.Hints.MenuHint>
+            <WelcomeScreen.Hints.ToolbarHint>
+              <></>
+            </WelcomeScreen.Hints.ToolbarHint>
+            <WelcomeScreen.Hints.HelpHint>
+              <></>
+            </WelcomeScreen.Hints.HelpHint>
+          </WelcomeScreen>
           <MainMenu>
             <MainMenu.DefaultItems.ClearCanvas/>
             <MainMenu.DefaultItems.SaveAsImage/>
