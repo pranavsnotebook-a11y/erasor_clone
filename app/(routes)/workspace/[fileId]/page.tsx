@@ -26,17 +26,17 @@ function Workspace({params}:any) {
       <PerformanceMonitor enabled={true} position="bottom-right" />
       <WorkspaceHeader onSave={()=>setTriggerSave(!triggerSave)} />
 
-      {/* Workspace Layout - use xl breakpoint for split view to give canvas enough width on tablets */}
-      <div className='grid grid-cols-1 xl:grid-cols-2'>
+      {/* Workspace Layout - use 2xl breakpoint (1536px+) for split view so canvas gets enough width */}
+      <div className='grid grid-cols-1 2xl:grid-cols-2'>
         {/* Document  */}
-          <div className='h-[50vh] xl:h-screen overflow-auto'>
+          <div className='h-[45vh] 2xl:h-screen overflow-auto border-b 2xl:border-b-0'>
             <Editor onSaveTrigger={triggerSave}
             fileId={params.fileId}
             fileData={fileData}
             />
           </div>
         {/* Whiteboard/canvas  */}
-        <div className='h-[50vh] xl:h-auto border-t xl:border-t-0 xl:border-l'>
+        <div className='h-[55vh] 2xl:h-screen 2xl:border-l'>
             <Canvas
              onSaveTrigger={triggerSave}
              fileId={params.fileId}
