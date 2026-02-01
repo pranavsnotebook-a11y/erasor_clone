@@ -99,6 +99,9 @@ h6.ce-header{
 .excalidraw h2.visually-hidden,
 .excalidraw [id*="shapes-title"],
 .excalidraw .HelpButton,
-.excalidraw .help-icon {
+.excalidraw .help-icon,
+.excalidraw .welcome-screen-menu-item,
+.excalidraw [class*="welcome-screen"],
+.excalidraw .layer-ui__wrapper__top-left {
   display: none !important;
 }
