@@ -1,38 +1,65 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef, useCallback } from 'react'
 import { Excalidraw, MainMenu, WelcomeScreen } from "@excalidraw/excalidraw";
+import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 import { FILE } from '../../dashboard/_components/FileList';
 import { useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
+
 function Canvas({onSaveTrigger,fileId,fileData}:{onSaveTrigger:any,fileId:any,fileData:FILE}) {
-  
+
     const [whiteBoardData,setWhiteBoardData]=useState<any>();
-    
+    const excalidrawAPIRef = useRef<ExcalidrawImperativeAPI | null>(null);
+    const isDrawingRef = useRef(false);
+
     const updateWhiteboard=useMutation(api.files.updateWhiteboard)
+
     useEffect(()=>{
         onSaveTrigger&&saveWhiteboard();
     },[onSaveTrigger])
+
     const saveWhiteboard=()=>{
-        updateWhiteboard({
-            _id:fileId,
-            whiteboard:JSON.stringify(whiteBoardData)
-        }).then(resp=>console.log(resp))
+        // Get current elements from API if available
+        const elements = excalidrawAPIRef.current?.getSceneElements() || whiteBoardData;
+        if (elements) {
+            updateWhiteboard({
+                _id:fileId,
+                whiteboard:JSON.stringify(elements)
+            }).then(resp=>console.log(resp))
+        }
     }
+
+    // Throttled onChange handler - only updates when not actively drawing
+    const handleChange = useCallback((excalidrawElements: any, appState: any, files: any) => {
+        // Check if user is currently drawing (pen/touch down)
+        const isCurrentlyDrawing = appState?.draggingElement !== null ||
+                                   appState?.resizingElement !== null ||
+                                   appState?.isResizing ||
+                                   appState?.isRotating;
+
+        isDrawingRef.current = isCurrentlyDrawing;
+
+        // Only update React state when NOT actively drawing
+        // This prevents React re-renders during stroke input
+        if (!isCurrentlyDrawing) {
+            setWhiteBoardData(excalidrawElements);
+        }
+    }, []);
+
     return (
     <div style={{ height: "670px" }}>
-   {fileData&& <Excalidraw 
+   {fileData&& <Excalidraw
+    excalidrawAPI={(api) => { excalidrawAPIRef.current = api; }}
     theme='light'
     initialData={{
         elements:fileData?.whiteboard&&JSON.parse(fileData?.whiteboard)
     }}
-    onChange={(excalidrawElements, appState, files)=>
-        setWhiteBoardData(excalidrawElements)}
+    onChange={handleChange}
     UIOptions={{
         canvasActions:{
             saveToActiveFile:false,
             loadScene:false,
             export:false,
             toggleTheme:false
-
         }
     }}
     >
