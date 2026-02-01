@@ -138,32 +138,59 @@ function Canvas({onSaveTrigger,fileId,fileData}:{onSaveTrigger:any,fileId:any,fi
     }, []);
 
     return (
-    <div ref={containerRef} className="relative w-full h-full" style={{ touchAction: 'none' }}>
-   {/* Optional preview layer for extra-low latency stroke rendering */}
-   {ENABLE_PREVIEW_LAYER && <StrokePreviewLayer enabled={true} />}
-   {fileData&& <Excalidraw
-    excalidrawAPI={(api) => { excalidrawAPIRef.current = api; }}
-    theme='light'
-    initialData={{
-        elements:fileData?.whiteboard&&JSON.parse(fileData?.whiteboard)
-    }}
-    onChange={handleChange}
-    UIOptions={{
-        canvasActions:{
-            saveToActiveFile:false,
-            loadScene:false,
-            export:false,
-            toggleTheme:false
+    <>
+      <style jsx global>{`
+        .excalidraw-wrapper {
+          width: 100%;
+          height: 100%;
         }
-    }}
-    >
-        <MainMenu>
+        .excalidraw-wrapper .excalidraw {
+          width: 100%;
+          height: 100%;
+        }
+        .excalidraw-wrapper .excalidraw .layer-ui__wrapper {
+          pointer-events: auto;
+        }
+        .excalidraw .App-menu_top {
+          left: 50%;
+          transform: translateX(-50%);
+        }
+      `}</style>
+      <div
+        ref={containerRef}
+        className="excalidraw-wrapper relative"
+        style={{
+          width: '100%',
+          height: 'calc(100vh - 70px)',
+          touchAction: 'none'
+        }}
+      >
+        {/* Optional preview layer for extra-low latency stroke rendering */}
+        {ENABLE_PREVIEW_LAYER && <StrokePreviewLayer enabled={true} />}
+        {fileData && <Excalidraw
+          excalidrawAPI={(api) => { excalidrawAPIRef.current = api; }}
+          theme='light'
+          initialData={{
+            elements: fileData?.whiteboard && JSON.parse(fileData?.whiteboard)
+          }}
+          onChange={handleChange}
+          UIOptions={{
+            canvasActions: {
+              saveToActiveFile: false,
+              loadScene: false,
+              export: false,
+              toggleTheme: false
+            }
+          }}
+        >
+          <MainMenu>
             <MainMenu.DefaultItems.ClearCanvas/>
             <MainMenu.DefaultItems.SaveAsImage/>
             <MainMenu.DefaultItems.ChangeCanvasBackground/>
-        </MainMenu>
+          </MainMenu>
         </Excalidraw>}
-  </div>
+      </div>
+    </>
   )
 }
 
