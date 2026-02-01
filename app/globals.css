@@ -93,3 +93,22 @@ h6.ce-header{
     @apply bg-background text-foreground;
   }
 }
+
+/* Excalidraw overrides - force horizontal toolbar instead of sidebar */
+.excalidraw .App-menu__left {
+  display: none !important;
+}
+
+.excalidraw .Island.App-toolbar {
+  position: fixed !important;
+  top: 70px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  z-index: 100 !important;
+}
+
+.excalidraw-container,
+.excalidraw {
+  width: 100% !important;
+  height: 100% !important;
+}
