@@ -94,66 +94,16 @@ h6.ce-header{
   }
 }
 
-/* Excalidraw overrides - force horizontal toolbar instead of oversized sidebar */
+/* Excalidraw overrides - clean mobile UI */
 
-/* Hide the vertical shapes panel/sidebar that shows numbered tools */
-.excalidraw .shapes-section,
-.excalidraw [class*="shapes-section"],
-.excalidraw .App-menu__left,
-.excalidraw [class*="App-menu__left"],
-.excalidraw .layer-ui__wrapper__top-right > div:first-child,
+/* Hide the "Shapes" title text (visually-hidden h2) */
+.excalidraw h2.visually-hidden,
+.excalidraw [id*="shapes-title"] {
+  display: none !important;
+}
+
+/* Hide keyboard shortcut indicators (1, 2, 3, etc.) */
 .excalidraw .ToolIcon__keybinding {
-  display: none !important;
-}
-
-/* Hide the "Shapes" label and numbered tool items */
-.excalidraw label:has(+ input[type="radio"]),
-.excalidraw .ToolIcon_type_radio {
-  display: none !important;
-}
-
-/* Hide all mobile/sidebar UI elements - Shapes checkbox, Library, lock, hand icons */
-.excalidraw .layer-ui__wrapper__top-left,
-.excalidraw [class*="layer-ui__wrapper__top-left"],
-.excalidraw .library-button,
-.excalidraw [class*="library-button"],
-.excalidraw .zen-mode-transition,
-.excalidraw [class*="zen-mode"],
-.excalidraw .scroll-back-to-content,
-.excalidraw [data-testid="image-export-button"],
-.excalidraw [data-testid="load-button"],
-.excalidraw .encrypted-icon,
-.excalidraw [class*="encrypted"],
-.excalidraw .UserList,
-.excalidraw [class*="UserList"],
-.excalidraw .HelpButton,
-.excalidraw [class*="HelpButton"],
-.excalidraw .welcome-screen-decor,
-.excalidraw [class*="welcome-screen"] {
-  display: none !important;
-}
-
-/* Hide "Shapes" section header text and container */
-.excalidraw .Island:has(.ToolIcon_type_checkbox),
-.excalidraw [class*="ShapesSwitcher"],
-.excalidraw .shapes-section-title,
-.excalidraw section:has([class*="shapes"]) {
-  display: none !important;
-}
-
-/* Target the specific "Shapes" labeled container */
-.excalidraw .layer-ui__wrapper section,
-.excalidraw .panelColumn,
-.excalidraw [class*="panelColumn"] {
-  display: none !important;
-}
-
-/* Hide the sidebar panel container entirely */
-.excalidraw .layer-ui__wrapper aside,
-.excalidraw aside.layer-ui__sidebar,
-.excalidraw [class*="sidebar"],
-.excalidraw .Sidebar,
-.excalidraw .mobile-misc-tools-container {
   display: none !important;
 }
 
@@ -163,31 +113,4 @@ h6.ce-header{
 .excalidraw .excalidraw-container {
   width: 100% !important;
   height: 100% !important;
-}
-
-/* Keep the main horizontal toolbar visible */
-.excalidraw .Island.App-toolbar,
-.excalidraw [class*="App-toolbar"] {
-  display: flex !important;
-}
-
-/* Force hide the visually-hidden h2 containing "Shapes" */
-.excalidraw h2.visually-hidden,
-.excalidraw [class*="visually-hidden"],
-.excalidraw .shapes-title,
-.excalidraw [id*="shapes-title"] {
-  display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-  width: 0 !important;
-  height: 0 !important;
-  position: absolute !important;
-  pointer-events: none !important;
-}
-
-/* Hide mobile toolbar variant elements that show Shapes label */
-.excalidraw .App-toolbar--mobile h2,
-.excalidraw .App-toolbar--mobile [class*="title"],
-.excalidraw.excalidraw--mobile h2 {
-  display: none !important;
 }
