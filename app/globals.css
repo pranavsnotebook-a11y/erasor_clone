@@ -94,21 +94,34 @@ h6.ce-header{
   }
 }
 
-/* Excalidraw overrides - force horizontal toolbar instead of sidebar */
-.excalidraw .App-menu__left {
+/* Excalidraw overrides - force horizontal toolbar instead of oversized sidebar */
+
+/* Hide the vertical shapes panel/sidebar that shows numbered tools */
+.excalidraw .shapes-section,
+.excalidraw [class*="shapes-section"],
+.excalidraw .App-menu__left,
+.excalidraw [class*="App-menu__left"],
+.excalidraw .layer-ui__wrapper__top-right > div:first-child,
+.excalidraw .ToolIcon__keybinding {
   display: none !important;
 }
 
-.excalidraw .Island.App-toolbar {
-  position: fixed !important;
-  top: 70px !important;
-  left: 50% !important;
-  transform: translateX(-50%) !important;
-  z-index: 100 !important;
+/* Hide the "Shapes" label and numbered tool items */
+.excalidraw label:has(+ input[type="radio"]),
+.excalidraw .ToolIcon_type_radio {
+  display: none !important;
 }
 
+/* Ensure canvas takes full space */
 .excalidraw-container,
-.excalidraw {
+.excalidraw,
+.excalidraw .excalidraw-container {
   width: 100% !important;
   height: 100% !important;
+}
+
+/* Keep the main horizontal toolbar visible */
+.excalidraw .Island.App-toolbar,
+.excalidraw [class*="App-toolbar"] {
+  display: flex !important;
 }
