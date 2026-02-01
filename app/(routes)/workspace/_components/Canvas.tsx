@@ -138,52 +138,81 @@ function Canvas({onSaveTrigger,fileId,fileData}:{onSaveTrigger:any,fileId:any,fi
     }, []);
 
     return (
-      <div
-        ref={containerRef}
-        className="relative w-full h-full"
-        style={{
-          minHeight: '400px',
-          touchAction: 'none',
-          overflow: 'hidden'
-        }}
-      >
-        {/* Optional preview layer for extra-low latency stroke rendering */}
-        {ENABLE_PREVIEW_LAYER && <StrokePreviewLayer enabled={true} />}
-        {fileData && <Excalidraw
-          excalidrawAPI={(api) => { excalidrawAPIRef.current = api; }}
-          theme='light'
-          initialData={{
-            elements: fileData?.whiteboard && JSON.parse(fileData?.whiteboard)
-          }}
-          onChange={handleChange}
-          UIOptions={{
-            canvasActions: {
-              saveToActiveFile: false,
-              loadScene: false,
-              export: false,
-              toggleTheme: false
-            }
+      <>
+        {/* CSS to force horizontal toolbar and hide oversized sidebar */}
+        <style jsx global>{`
+          /* Hide the mobile/sidebar tool panel */
+          .excalidraw .App-menu__left {
+            display: none !important;
+          }
+          /* Ensure main toolbar is always visible */
+          .excalidraw .App-toolbar-container {
+            display: flex !important;
+          }
+          /* Fix toolbar positioning */
+          .excalidraw .App-menu_top {
+            display: flex !important;
+            position: absolute !important;
+            top: 10px !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+          }
+          /* Ensure canvas takes full space */
+          .excalidraw-container {
+            width: 100% !important;
+            height: 100% !important;
+          }
+          .excalidraw {
+            width: 100% !important;
+            height: 100% !important;
+          }
+        `}</style>
+        <div
+          ref={containerRef}
+          className="excalidraw-container relative w-full h-full"
+          style={{
+            touchAction: 'none',
+            overflow: 'hidden'
           }}
         >
-          {/* Custom empty WelcomeScreen to completely disable all hints */}
-          <WelcomeScreen>
-            <WelcomeScreen.Hints.MenuHint>
-              <></>
-            </WelcomeScreen.Hints.MenuHint>
-            <WelcomeScreen.Hints.ToolbarHint>
-              <></>
-            </WelcomeScreen.Hints.ToolbarHint>
-            <WelcomeScreen.Hints.HelpHint>
-              <></>
-            </WelcomeScreen.Hints.HelpHint>
-          </WelcomeScreen>
-          <MainMenu>
-            <MainMenu.DefaultItems.ClearCanvas/>
-            <MainMenu.DefaultItems.SaveAsImage/>
-            <MainMenu.DefaultItems.ChangeCanvasBackground/>
-          </MainMenu>
-        </Excalidraw>}
-      </div>
+          {/* Optional preview layer for extra-low latency stroke rendering */}
+          {ENABLE_PREVIEW_LAYER && <StrokePreviewLayer enabled={true} />}
+          {fileData && <Excalidraw
+            excalidrawAPI={(api) => { excalidrawAPIRef.current = api; }}
+            theme='light'
+            initialData={{
+              elements: fileData?.whiteboard && JSON.parse(fileData?.whiteboard)
+            }}
+            onChange={handleChange}
+            UIOptions={{
+              canvasActions: {
+                saveToActiveFile: false,
+                loadScene: false,
+                export: false,
+                toggleTheme: false
+              }
+            }}
+          >
+            {/* Custom empty WelcomeScreen to completely disable all hints */}
+            <WelcomeScreen>
+              <WelcomeScreen.Hints.MenuHint>
+                <></>
+              </WelcomeScreen.Hints.MenuHint>
+              <WelcomeScreen.Hints.ToolbarHint>
+                <></>
+              </WelcomeScreen.Hints.ToolbarHint>
+              <WelcomeScreen.Hints.HelpHint>
+                <></>
+              </WelcomeScreen.Hints.HelpHint>
+            </WelcomeScreen>
+            <MainMenu>
+              <MainMenu.DefaultItems.ClearCanvas/>
+              <MainMenu.DefaultItems.SaveAsImage/>
+              <MainMenu.DefaultItems.ChangeCanvasBackground/>
+            </MainMenu>
+          </Excalidraw>}
+        </div>
+      </>
   )
 }
 
