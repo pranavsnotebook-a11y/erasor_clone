@@ -6,7 +6,6 @@ import { useConvex } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { FILE } from '../../dashboard/_components/FileList';
 import Canvas from '../_components/Canvas';
-import PerformanceMonitor from '../_components/PerformanceMonitor';
 
 function Workspace({params}:any) {
    const [triggerSave,setTriggerSave]=useState(false);
@@ -23,7 +22,6 @@ function Workspace({params}:any) {
   }
   return (
     <div>
-      <PerformanceMonitor enabled={true} position="bottom-right" />
       <WorkspaceHeader onSave={()=>setTriggerSave(!triggerSave)} />
 
       {/* Workspace Layout  */}
