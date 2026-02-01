@@ -133,6 +133,21 @@ h6.ce-header{
   display: none !important;
 }
 
+/* Hide "Shapes" section header text and container */
+.excalidraw .Island:has(.ToolIcon_type_checkbox),
+.excalidraw [class*="ShapesSwitcher"],
+.excalidraw .shapes-section-title,
+.excalidraw section:has([class*="shapes"]) {
+  display: none !important;
+}
+
+/* Target the specific "Shapes" labeled container */
+.excalidraw .layer-ui__wrapper section,
+.excalidraw .panelColumn,
+.excalidraw [class*="panelColumn"] {
+  display: none !important;
+}
+
 /* Hide the sidebar panel container entirely */
 .excalidraw .layer-ui__wrapper aside,
 .excalidraw aside.layer-ui__sidebar,
