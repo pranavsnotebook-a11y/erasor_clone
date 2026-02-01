@@ -138,31 +138,13 @@ function Canvas({onSaveTrigger,fileId,fileData}:{onSaveTrigger:any,fileId:any,fi
     }, []);
 
     return (
-    <>
-      <style jsx global>{`
-        .excalidraw-wrapper {
-          width: 100%;
-          height: 100%;
-        }
-        .excalidraw-wrapper .excalidraw {
-          width: 100%;
-          height: 100%;
-        }
-        .excalidraw-wrapper .excalidraw .layer-ui__wrapper {
-          pointer-events: auto;
-        }
-        .excalidraw .App-menu_top {
-          left: 50%;
-          transform: translateX(-50%);
-        }
-      `}</style>
       <div
         ref={containerRef}
-        className="excalidraw-wrapper relative"
+        className="relative w-full h-full"
         style={{
-          width: '100%',
-          height: 'calc(100vh - 70px)',
-          touchAction: 'none'
+          minHeight: '400px',
+          touchAction: 'none',
+          overflow: 'hidden'
         }}
       >
         {/* Optional preview layer for extra-low latency stroke rendering */}
@@ -180,7 +162,8 @@ function Canvas({onSaveTrigger,fileId,fileData}:{onSaveTrigger:any,fileId:any,fi
               loadScene: false,
               export: false,
               toggleTheme: false
-            }
+            },
+            welcomeScreen: false
           }}
         >
           <MainMenu>
@@ -190,7 +173,6 @@ function Canvas({onSaveTrigger,fileId,fileData}:{onSaveTrigger:any,fileId:any,fi
           </MainMenu>
         </Excalidraw>}
       </div>
-    </>
   )
 }
 
