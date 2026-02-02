@@ -11,9 +11,9 @@ import AdaptivePointerHandler from './AdaptivePointerHandler';
 import InstantStrokePreview from './InstantStrokePreview';
 import ThinStrokePatch from './ThinStrokePatch';
 
-// Enable instant preview for sub-10ms visual feedback
-// Uses desynchronized canvas that renders independently of React/Excalidraw
-const ENABLE_INSTANT_PREVIEW = true;
+// Instant preview disabled - causes double-line artifacts during pan/scroll
+// because it renders at screen coordinates, not Excalidraw's transformed coordinates
+const ENABLE_INSTANT_PREVIEW = false;
 
 // Legacy preview layer disabled
 const ENABLE_PREVIEW_LAYER = false;
