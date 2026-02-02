@@ -6,6 +6,8 @@ import { api } from '@/convex/_generated/api';
 import { configureForStylus } from './usePointerOptimization';
 import StrokePreviewLayer from './StrokePreviewLayer';
 import { useDebouncedSave } from './useDebouncedSave';
+import { applyRenderingOptimizations } from './useExcalidrawOptimization';
+import AdaptivePointerHandler from './AdaptivePointerHandler';
 
 // Enable preview layer for extra-low latency (renders strokes immediately)
 // This provides instant visual feedback while Excalidraw processes the stroke
@@ -21,10 +23,17 @@ function Canvas({onSaveTrigger,fileId,fileData}:{onSaveTrigger:any,fileId:any,fi
     const containerRef = useRef<HTMLDivElement>(null);
     const wasDrawingRef = useRef(false);
 
-    // Configure container for optimal stylus input
+    // Configure container for optimal stylus input and GPU acceleration
     useEffect(() => {
         if (containerRef.current) {
             configureForStylus(containerRef.current);
+            // Apply GPU acceleration after Excalidraw mounts
+            const timer = setTimeout(() => {
+                if (containerRef.current) {
+                    applyRenderingOptimizations(containerRef.current);
+                }
+            }, 500);
+            return () => clearTimeout(timer);
         }
     }, []);
 
@@ -106,7 +115,21 @@ function Canvas({onSaveTrigger,fileId,fileData}:{onSaveTrigger:any,fileId:any,fi
 
 
     return (
-    <div ref={containerRef} className="relative" style={{ height: "670px", touchAction: 'none' }}>
+    <div
+      ref={containerRef}
+      className="relative"
+      style={{
+        height: "670px",
+        touchAction: 'none',
+        // GPU acceleration hints
+        willChange: 'transform',
+        transform: 'translateZ(0)',
+        isolation: 'isolate',
+        contain: 'layout style paint'
+      }}
+    >
+   {/* Adaptive pointer handler for point decimation at low zoom */}
+   <AdaptivePointerHandler enabled={true} containerRef={containerRef} minPointDistance={3} />
    {/* Optional preview layer for extra-low latency stroke rendering */}
    {ENABLE_PREVIEW_LAYER && <StrokePreviewLayer enabled={true} />}
    {fileData&& <Excalidraw
