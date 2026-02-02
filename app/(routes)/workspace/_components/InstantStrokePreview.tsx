@@ -96,12 +96,12 @@ export function InstantStrokePreview() {
         if (bg && bg !== 'rgba(0, 0, 0, 0)') color = bg
       }
 
-      // Get stroke width - default to ultra-thin (0.5)
+      // Get stroke width - scaled to 50% (thin=0.5, bold=1, extraBold=2)
       let width = 0.5
       const boldSelected = document.querySelector('[title*="Bold"][aria-checked="true"]')
       const extraBoldSelected = document.querySelector('[title*="Extra bold"][aria-checked="true"]')
-      if (extraBoldSelected) width = 4
-      else if (boldSelected) width = 2
+      if (extraBoldSelected) width = 2
+      else if (boldSelected) width = 1
 
       return { color, width }
     }

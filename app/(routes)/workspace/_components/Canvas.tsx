@@ -9,6 +9,7 @@ import { useDebouncedSave } from './useDebouncedSave';
 import { applyRenderingOptimizations } from './useExcalidrawOptimization';
 import AdaptivePointerHandler from './AdaptivePointerHandler';
 import InstantStrokePreview from './InstantStrokePreview';
+import ThinStrokePatch from './ThinStrokePatch';
 
 // Enable instant preview for sub-10ms visual feedback
 // Uses desynchronized canvas that renders independently of React/Excalidraw
@@ -132,6 +133,8 @@ function Canvas({onSaveTrigger,fileId,fileData}:{onSaveTrigger:any,fileId:any,fi
         contain: 'layout style paint'
       }}
     >
+   {/* Patches to make strokes 50% thinner than default */}
+   <ThinStrokePatch />
    {/* Instant preview layer for sub-10ms visual feedback */}
    {ENABLE_INSTANT_PREVIEW && <InstantStrokePreview />}
    {/* Legacy preview layer */}
