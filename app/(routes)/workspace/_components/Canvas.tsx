@@ -116,6 +116,8 @@ function Canvas({onSaveTrigger,fileId,fileData}:{onSaveTrigger:any,fileId:any,fi
         elements:fileData?.whiteboard&&JSON.parse(fileData?.whiteboard)
     }}
     onChange={handleChange}
+    detectScroll={false}
+    handleKeyboardGlobally={false}
     UIOptions={{
         canvasActions:{
             saveToActiveFile:false,
