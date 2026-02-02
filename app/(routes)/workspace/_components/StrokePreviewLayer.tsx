@@ -74,42 +74,29 @@ export function StrokePreviewLayer({
     }
   }, [enabled, strokeColor, strokeWidth])
 
-  // Render loop using requestAnimationFrame
+  // Render loop using requestAnimationFrame - NO SMOOTHING for instant feedback
   const render = useCallback(() => {
     const ctx = ctxRef.current
     const canvas = canvasRef.current
-    if (!ctx || !canvas || pointsRef.current.length < 2) {
+    if (!ctx || !canvas || pointsRef.current.length < 1) {
       rafIdRef.current = null
       return
     }
 
-    // Draw new points since last render
     const points = pointsRef.current
     const lastRendered = lastPointRef.current
 
+    // INSTANT RENDERING: Draw straight lines for zero latency
+    // No smoothing, no curves - just direct point-to-point
     ctx.beginPath()
 
-    if (lastRendered) {
-      ctx.moveTo(lastRendered.x, lastRendered.y)
-    } else {
-      ctx.moveTo(points[0].x, points[0].y)
-    }
+    const startPoint = lastRendered || points[0]
+    ctx.moveTo(startPoint.x, startPoint.y)
 
-    // Draw smooth curve through points
-    for (let i = lastRendered ? 0 : 1; i < points.length; i++) {
+    // Draw direct lines to each point - fastest possible rendering
+    for (let i = 0; i < points.length; i++) {
       const point = points[i]
-      const prevPoint = i > 0 ? points[i - 1] : lastRendered || points[0]
-
-      // Use quadratic curve for smoother lines
-      const midX = (prevPoint.x + point.x) / 2
-      const midY = (prevPoint.y + point.y) / 2
-
-      ctx.quadraticCurveTo(prevPoint.x, prevPoint.y, midX, midY)
-
-      // Vary line width based on pressure
-      if (point.pressure > 0) {
-        ctx.lineWidth = strokeWidth * (0.5 + point.pressure * 0.5)
-      }
+      ctx.lineTo(point.x, point.y)
     }
 
     ctx.stroke()
@@ -120,9 +107,7 @@ export function StrokePreviewLayer({
     }
 
     // Clear processed points but keep last one for continuity
-    if (points.length > 1) {
-      pointsRef.current = [points[points.length - 1]]
-    }
+    pointsRef.current = points.length > 0 ? [points[points.length - 1]] : []
 
     rafIdRef.current = null
   }, [strokeWidth])
@@ -149,45 +134,51 @@ export function StrokePreviewLayer({
   useEffect(() => {
     if (!enabled) return
 
-    const handlePointerDown = (e: PointerEvent) => {
-      // Handle all pointer types (pen, touch, mouse) for drawing
-      // Only skip if not a primary button press for mouse
-      if (e.pointerType === 'mouse' && e.button !== 0) return
+    const handlePointerDown = (e: PointerEvent | MouseEvent) => {
+      // Handle all pointer types and mouse events
+      // Only skip if not a primary button press
+      if (e.button !== 0) return
+
+      // Check if event is within our canvas area
+      const canvas = canvasRef.current
+      if (!canvas) return
+
+      const rect = canvas.getBoundingClientRect()
+      if (e.clientX < rect.left || e.clientX > rect.right ||
+          e.clientY < rect.top || e.clientY > rect.bottom) {
+        return // Event is outside canvas
+      }
 
       isDrawingRef.current = true
       pointsRef.current = []
       lastPointRef.current = null
 
-      // Get position relative to canvas
-      const canvas = canvasRef.current
-      if (canvas) {
-        const rect = canvas.getBoundingClientRect()
-        pointsRef.current.push({
-          x: e.clientX - rect.left,
-          y: e.clientY - rect.top,
-          pressure: e.pressure || 0.5 // Default pressure for mouse
-        })
-      }
+      pointsRef.current.push({
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+        pressure: (e as PointerEvent).pressure || 0.5
+      })
     }
 
-    const handlePointerMove = (e: PointerEvent) => {
+    const handlePointerMove = (e: PointerEvent | MouseEvent) => {
       if (!isDrawingRef.current) return
-      // For mouse, check if primary button is still pressed
-      if (e.pointerType === 'mouse' && !(e.buttons & 1)) return
+      // Check if primary button is still pressed
+      if (!(e.buttons & 1)) return
 
       const canvas = canvasRef.current
       if (!canvas) return
 
       const rect = canvas.getBoundingClientRect()
 
-      // Process coalesced events for high-frequency input
-      const events = e.getCoalescedEvents?.() || [e]
+      // Process coalesced events for high-frequency input (pointer events only)
+      const coalescedEvents = 'getCoalescedEvents' in e ? (e as PointerEvent).getCoalescedEvents?.() : null
+      const events = coalescedEvents || [e]
 
       for (const event of events) {
         pointsRef.current.push({
           x: event.clientX - rect.left,
           y: event.clientY - rect.top,
-          pressure: event.pressure || 0.5 // Default pressure for mouse
+          pressure: (event as PointerEvent).pressure || 0.5
         })
       }
 
@@ -207,7 +198,7 @@ export function StrokePreviewLayer({
       }
 
       // Clear preview after a short delay (let Excalidraw commit the stroke)
-      setTimeout(clearCanvas, 50)
+      setTimeout(clearCanvas, 100)
     }
 
     const handlePointerCancel = () => {
@@ -215,17 +206,26 @@ export function StrokePreviewLayer({
       clearCanvas()
     }
 
-    // Attach to document for global capture
-    document.addEventListener('pointerdown', handlePointerDown, { passive: true })
-    document.addEventListener('pointermove', handlePointerMove, { passive: true })
-    document.addEventListener('pointerup', handlePointerUp, { passive: true })
-    document.addEventListener('pointercancel', handlePointerCancel, { passive: true })
+    // Attach to document with capture phase for earliest possible interception
+    const captureOptions = { passive: true, capture: true }
+    document.addEventListener('pointerdown', handlePointerDown, captureOptions)
+    document.addEventListener('pointermove', handlePointerMove, captureOptions)
+    document.addEventListener('pointerup', handlePointerUp, captureOptions)
+    document.addEventListener('pointercancel', handlePointerCancel, captureOptions)
+
+    // Also listen to mouse events for Playwright compatibility
+    document.addEventListener('mousedown', handlePointerDown as any, captureOptions)
+    document.addEventListener('mousemove', handlePointerMove as any, captureOptions)
+    document.addEventListener('mouseup', handlePointerUp as any, captureOptions)
 
     return () => {
-      document.removeEventListener('pointerdown', handlePointerDown)
-      document.removeEventListener('pointermove', handlePointerMove)
-      document.removeEventListener('pointerup', handlePointerUp)
-      document.removeEventListener('pointercancel', handlePointerCancel)
+      document.removeEventListener('pointerdown', handlePointerDown, captureOptions)
+      document.removeEventListener('pointermove', handlePointerMove, captureOptions)
+      document.removeEventListener('pointerup', handlePointerUp, captureOptions)
+      document.removeEventListener('pointercancel', handlePointerCancel, captureOptions)
+      document.removeEventListener('mousedown', handlePointerDown as any, captureOptions)
+      document.removeEventListener('mousemove', handlePointerMove as any, captureOptions)
+      document.removeEventListener('mouseup', handlePointerUp as any, captureOptions)
 
       if (rafIdRef.current !== null) {
         cancelAnimationFrame(rafIdRef.current)
