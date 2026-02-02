@@ -140,7 +140,13 @@ function Canvas({onSaveTrigger,fileId,fileData}:{onSaveTrigger:any,fileId:any,fi
     excalidrawAPI={(api) => { excalidrawAPIRef.current = api; }}
     theme='light'
     initialData={{
-        elements:fileData?.whiteboard&&JSON.parse(fileData?.whiteboard)
+        elements:fileData?.whiteboard&&JSON.parse(fileData?.whiteboard),
+        appState: {
+            // Ultra-thin stroke by default (thinner than Excalidraw's "thin" which is 1)
+            currentItemStrokeWidth: 0.5,
+            // Start with freedraw tool selected
+            activeTool: { type: 'freedraw', lastActiveTool: null, locked: false, customType: null },
+        }
     }}
     onChange={handleChange}
     detectScroll={false}

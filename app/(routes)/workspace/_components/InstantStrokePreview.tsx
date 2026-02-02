@@ -96,12 +96,12 @@ export function InstantStrokePreview() {
         if (bg && bg !== 'rgba(0, 0, 0, 0)') color = bg
       }
 
-      // Get stroke width
-      let width = 2
-      const thinSelected = document.querySelector('[title*="Thin"][aria-checked="true"]')
+      // Get stroke width - default to ultra-thin (0.5)
+      let width = 0.5
       const boldSelected = document.querySelector('[title*="Bold"][aria-checked="true"]')
-      if (thinSelected) width = 1
-      else if (boldSelected) width = 4
+      const extraBoldSelected = document.querySelector('[title*="Extra bold"][aria-checked="true"]')
+      if (extraBoldSelected) width = 4
+      else if (boldSelected) width = 2
 
       return { color, width }
     }
