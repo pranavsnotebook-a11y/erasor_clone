@@ -163,6 +163,8 @@ function Canvas({onSaveTrigger,fileId,fileData}:{onSaveTrigger:any,fileId:any,fi
                 currentItemStrokeWidth: 0.5,
                 // Start with freedraw tool selected
                 activeTool: { type: 'freedraw', lastActiveTool: null, locked: false, customType: null },
+                // Default zoom level - more zoomed out to see more content
+                zoom: { value: 0.5 },
             }
         };
     })()}
