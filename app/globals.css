@@ -93,3 +93,55 @@ h6.ce-header{
     @apply bg-background text-foreground;
   }
 }
+
+/* Excalidraw v0.18.0 toolbar layout fixes */
+.excalidraw {
+  --ui-font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Force horizontal toolbar at top */
+.excalidraw .App-toolbar-container {
+  position: absolute !important;
+  top: 10px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  right: auto !important;
+  bottom: auto !important;
+  flex-direction: row !important;
+}
+
+.excalidraw .App-toolbar {
+  flex-direction: row !important;
+}
+
+/* Shapes section - horizontal layout */
+.excalidraw .Shapes-section,
+.excalidraw [class*="Shapes"] {
+  flex-direction: row !important;
+}
+
+.excalidraw .ToolIcon__icon {
+  width: 36px !important;
+  height: 36px !important;
+}
+
+/* Hide keybindings in toolbar for cleaner look */
+.excalidraw .ToolIcon__keybinding {
+  display: none !important;
+}
+
+/* Fix toolbar items alignment */
+.excalidraw .App-toolbar .ToolIcon {
+  display: inline-flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+}
+
+/* Ensure toolbar is visible and properly positioned */
+.excalidraw .layer-ui__wrapper {
+  pointer-events: none;
+}
+
+.excalidraw .layer-ui__wrapper > * {
+  pointer-events: auto;
+}
