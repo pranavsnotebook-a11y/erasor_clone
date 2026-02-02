@@ -9,9 +9,9 @@ import { useDebouncedSave } from './useDebouncedSave';
 import { applyRenderingOptimizations } from './useExcalidrawOptimization';
 import AdaptivePointerHandler from './AdaptivePointerHandler';
 
-// Enable preview layer for extra-low latency (renders strokes immediately)
-// This provides instant visual feedback while Excalidraw processes the stroke
-const ENABLE_PREVIEW_LAYER = true;
+// Preview layer disabled - was causing visual confusion with actual strokes
+// Excalidraw v0.18.0 has improved freedraw performance
+const ENABLE_PREVIEW_LAYER = false;
 
 // Auto-save debounce interval in milliseconds
 const AUTO_SAVE_DEBOUNCE_MS = 2000;
@@ -128,8 +128,8 @@ function Canvas({onSaveTrigger,fileId,fileData}:{onSaveTrigger:any,fileId:any,fi
         contain: 'layout style paint'
       }}
     >
-   {/* Adaptive pointer handler for point decimation at low zoom */}
-   <AdaptivePointerHandler enabled={true} containerRef={containerRef} minPointDistance={3} />
+   {/* Adaptive pointer handler disabled - was causing illegible strokes when zoomed out */}
+   {/* <AdaptivePointerHandler enabled={true} containerRef={containerRef} minPointDistance={3} /> */}
    {/* Optional preview layer for extra-low latency stroke rendering */}
    {ENABLE_PREVIEW_LAYER && <StrokePreviewLayer enabled={true} />}
    {fileData&& <Excalidraw
