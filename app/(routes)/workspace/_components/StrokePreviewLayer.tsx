@@ -150,7 +150,9 @@ export function StrokePreviewLayer({
     if (!enabled) return
 
     const handlePointerDown = (e: PointerEvent) => {
-      if (e.pointerType !== 'pen' && e.pointerType !== 'touch') return
+      // Handle all pointer types (pen, touch, mouse) for drawing
+      // Only skip if not a primary button press for mouse
+      if (e.pointerType === 'mouse' && e.button !== 0) return
 
       isDrawingRef.current = true
       pointsRef.current = []
@@ -163,14 +165,15 @@ export function StrokePreviewLayer({
         pointsRef.current.push({
           x: e.clientX - rect.left,
           y: e.clientY - rect.top,
-          pressure: e.pressure
+          pressure: e.pressure || 0.5 // Default pressure for mouse
         })
       }
     }
 
     const handlePointerMove = (e: PointerEvent) => {
       if (!isDrawingRef.current) return
-      if (e.pointerType !== 'pen' && e.pointerType !== 'touch') return
+      // For mouse, check if primary button is still pressed
+      if (e.pointerType === 'mouse' && !(e.buttons & 1)) return
 
       const canvas = canvasRef.current
       if (!canvas) return
@@ -184,7 +187,7 @@ export function StrokePreviewLayer({
         pointsRef.current.push({
           x: event.clientX - rect.left,
           y: event.clientY - rect.top,
-          pressure: event.pressure
+          pressure: event.pressure || 0.5 // Default pressure for mouse
         })
       }
 

@@ -2,34 +2,62 @@
 active: true
 iteration: 1
 max_iterations: 0
-completion_promise: null
-started_at: "2026-02-01T23:15:07Z"
+completion_promise: "FIXED_LATENCY"
+started_at: "2026-02-02T00:05:35Z"
 ---
 
+Objective:
+Investigate and fix the thin-stroke, zoomed-out canvas latency problem. Excalidraw’s default rendering pipeline struggles with: 
+- thin strokes (high point density)
+- zoomed-out view (large viewport)
+- continuous cursive writing (rapid stroke generation)
 
-Use Playwright to continuously test and verify the canvas UI at:
-https://pranavsnotebook.vercel.app/workspace/jd765vqymg6mx7wdf19xqg1bad80b4s0
+Your mission:
+Research, experiment, optimise, patch, monkey-patch, wrap, or replace rendering logic until performance is acceptable.
 
-Current issue:
-Large icons introduced during our optimisation changes broke the canvas rendering.
-Because of this, drawing is not functioning as expected.
+What you must do each iteration:
+1. Measure latency using Playwright MCP:
+   - Zoomed OUT level (same as user reproduces)
+   - Thin stroke setting
+   - Cursive-style continuous pointer events
+   - Record average latency across 300 events between: pointer event → visible pixel
 
-Your tasks:
-1. Use git history to understand what optimisation change caused the regression.
-2. Use Playwright MCP to repeatedly load the workspace URL, capture screenshots,
-   and confirm whether the canvas UI is behaving correctly.
-3. Continue looping until the canvas is fixed.
+2. If latency > 10ms:
+   Attempt progressively deeper optimisation layers, including:
+   - Experimental render batching
+   - Stroke point decimation / adaptive simplification
+   - Curve smoothing reduction under zoom-out
+   - GPU acceleration flags
+   - Switching Excalidraw to staticCanvasMode when writing
+   - Custom stroke processor that reduces point density based on zoom
+   - Shadow canvas rendering
+   - requestAnimationFrame batching
+   - Custom render throttler
+   - Overriding ExcalidrawApp's scene container render loop
+   - Overriding perfect-freehand config to reduce noise at scale
+   - Conditional render pipeline (thin stroke → fast mode)
+   - Researching documented Excalidraw issues + experimental fixes
+   - Trying alternative libraries for stroke ONLY while keeping Excalidraw for elements
+   - Hybrid approach: Excalidraw for shapes + fast-canvas for handwriting layer
+   - Monkey-patching internal methods if necessary
 
-Expected correct behaviour:
-- Left side text editor: typing should work normally.
-- Right side canvas: user should be able to draw smoothly with no latency.
-- Strokes should appear immediately and consistently.
-- Saving should persist strokes and reloading the file should show previous drawings.
-- Overall UI must be clean, drawable, writable, and responsive.
+3. Validate:
+   - No UI regressions
+   - No oversized icons
+   - Canvas redraws correctly
+   - Strokes appear instantly
+   - Saving and reopening works
+   - Continuous writing feels fluid (cursive)
 
-Do not stop looping until:
-- The canvas draws correctly,
-- Strokes render without delay,
-- Saved strokes reappear on reopen.
+4. If needed, research:
+   - Excalidraw GitHub issues
+   - Thin stroke performance discussions
+   - Perfect Freehand performance tuning
+   - Alternative high-performance canvas libs (Paper.js, Rough.js fast mode, Konva fast layer, Pencil.js optimised strokes)
 
-When fixed, produce a final confirmation screenshot.
+Stop only when:
+- Thin stroke + zoomed-out continuous writing latency <= 10ms
+- No UI issues were introduced
+- User experience is smooth and fluid
+
+When satisfied, output: FIXED_LATENCY

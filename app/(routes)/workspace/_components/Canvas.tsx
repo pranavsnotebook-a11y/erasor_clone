@@ -8,8 +8,8 @@ import StrokePreviewLayer from './StrokePreviewLayer';
 import { useDebouncedSave } from './useDebouncedSave';
 
 // Enable preview layer for extra-low latency (renders strokes immediately)
-// This can be enabled if Excalidraw's native rendering is still too slow
-const ENABLE_PREVIEW_LAYER = false;
+// This provides instant visual feedback while Excalidraw processes the stroke
+const ENABLE_PREVIEW_LAYER = true;
 
 // Auto-save debounce interval in milliseconds
 const AUTO_SAVE_DEBOUNCE_MS = 2000;
