@@ -8,9 +8,13 @@ import StrokePreviewLayer from './StrokePreviewLayer';
 import { useDebouncedSave } from './useDebouncedSave';
 import { applyRenderingOptimizations } from './useExcalidrawOptimization';
 import AdaptivePointerHandler from './AdaptivePointerHandler';
+import InstantStrokePreview from './InstantStrokePreview';
 
-// Preview layer disabled - was causing visual confusion with actual strokes
-// Excalidraw v0.18.0 has improved freedraw performance
+// Enable instant preview for sub-10ms visual feedback
+// Uses desynchronized canvas that renders independently of React/Excalidraw
+const ENABLE_INSTANT_PREVIEW = true;
+
+// Legacy preview layer disabled
 const ENABLE_PREVIEW_LAYER = false;
 
 // Auto-save debounce interval in milliseconds
@@ -128,9 +132,9 @@ function Canvas({onSaveTrigger,fileId,fileData}:{onSaveTrigger:any,fileId:any,fi
         contain: 'layout style paint'
       }}
     >
-   {/* Adaptive pointer handler disabled - was causing illegible strokes when zoomed out */}
-   {/* <AdaptivePointerHandler enabled={true} containerRef={containerRef} minPointDistance={3} /> */}
-   {/* Optional preview layer for extra-low latency stroke rendering */}
+   {/* Instant preview layer for sub-10ms visual feedback */}
+   {ENABLE_INSTANT_PREVIEW && <InstantStrokePreview />}
+   {/* Legacy preview layer */}
    {ENABLE_PREVIEW_LAYER && <StrokePreviewLayer enabled={true} />}
    {fileData&& <Excalidraw
     excalidrawAPI={(api) => { excalidrawAPIRef.current = api; }}
