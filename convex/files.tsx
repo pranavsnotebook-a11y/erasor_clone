@@ -54,25 +54,66 @@ export const updateWhiteboard=mutation({
 
         // If both have the new format { elements, files }, merge them
         if (existingData?.elements && newData?.elements) {
-            // Merge elements by ID - newer version wins
+            // Merge elements by ID using version + updated timestamp
             const elementMap = new Map();
+
+            // First, add all existing elements
             for (const el of existingData.elements) {
                 elementMap.set(el.id, el);
             }
+
+            // Then merge new elements with conflict resolution
             for (const el of newData.elements) {
                 const existing = elementMap.get(el.id);
-                // Keep element with higher version, or new element if no existing
-                if (!existing || (el.version || 0) >= (existing.version || 0)) {
+                if (!existing) {
+                    // New element - add it
                     elementMap.set(el.id, el);
+                } else {
+                    // Conflict resolution:
+                    // 1. Higher version wins
+                    // 2. If same version, newer timestamp wins
+                    // 3. Deleted state is "sticky" - once deleted, stays deleted unless newer version restores
+                    const newVersion = el.version || 0;
+                    const existingVersion = existing.version || 0;
+                    const newUpdated = el.updated || 0;
+                    const existingUpdated = existing.updated || 0;
+
+                    if (newVersion > existingVersion) {
+                        elementMap.set(el.id, el);
+                    } else if (newVersion === existingVersion) {
+                        // Same version - use timestamp, but preserve deletion
+                        if (existing.isDeleted && !el.isDeleted) {
+                            // Keep deleted state (deletion is sticky)
+                            elementMap.set(el.id, existing);
+                        } else if (newUpdated > existingUpdated) {
+                            elementMap.set(el.id, el);
+                        }
+                        // else keep existing
+                    }
+                    // else newVersion < existingVersion, keep existing
                 }
             }
 
             // Merge files - union of all files (images)
             const mergedFiles = { ...existingData.files, ...newData.files };
 
+            // Clean up orphaned files (optional - keeps files referenced by any element)
+            const usedFileIds = new Set();
+            for (const el of elementMap.values()) {
+                if (el.type === 'image' && el.fileId) {
+                    usedFileIds.add(el.fileId);
+                }
+            }
+            const cleanedFiles: Record<string, any> = {};
+            for (const [fileId, fileData] of Object.entries(mergedFiles)) {
+                if (usedFileIds.has(fileId)) {
+                    cleanedFiles[fileId] = fileData;
+                }
+            }
+
             const mergedData = {
                 elements: Array.from(elementMap.values()),
-                files: mergedFiles
+                files: cleanedFiles
             };
 
             const result = await ctx.db.patch(args._id, { whiteboard: JSON.stringify(mergedData) });
