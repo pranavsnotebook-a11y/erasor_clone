@@ -24,6 +24,7 @@ const AUTO_SAVE_DEBOUNCE_MS = 2000;
 function Canvas({onSaveTrigger,fileId,fileData}:{onSaveTrigger:any,fileId:any,fileData:FILE}) {
 
     const [whiteBoardData,setWhiteBoardData]=useState<any>();
+    const [whiteBoardFiles,setWhiteBoardFiles]=useState<any>({});
     const excalidrawAPIRef = useRef<any>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const wasDrawingRef = useRef(false);
@@ -45,13 +46,15 @@ function Canvas({onSaveTrigger,fileId,fileData}:{onSaveTrigger:any,fileId:any,fi
     const updateWhiteboard=useMutation(api.files.updateWhiteboard)
 
     // Debounced auto-save for non-blocking persistence
+    // Now saves both elements AND files (for images)
     const { scheduleSave, saveNow } = useDebouncedSave({
         debounceMs: AUTO_SAVE_DEBOUNCE_MS,
-        onSave: async (elements) => {
-            if (elements && fileId) {
+        onSave: async (data) => {
+            if (data && fileId) {
+                // data is now { elements, files }
                 await updateWhiteboard({
                     _id: fileId,
-                    whiteboard: JSON.stringify(elements)
+                    whiteboard: JSON.stringify(data)
                 })
             }
         },
@@ -73,11 +76,12 @@ function Canvas({onSaveTrigger,fileId,fileData}:{onSaveTrigger:any,fileId:any,fi
     },[onSaveTrigger])
 
     const saveWhiteboard=()=>{
-        // Get current elements from API if available
+        // Get current elements and files from API if available
         const elements = excalidrawAPIRef.current?.getSceneElements() || whiteBoardData;
+        const files = excalidrawAPIRef.current?.getFiles() || whiteBoardFiles;
         if (elements) {
-            // Use immediate save for explicit save action
-            saveNow(elements)
+            // Save both elements and files (for images)
+            saveNow({ elements, files })
         }
     }
 
@@ -102,19 +106,23 @@ function Canvas({onSaveTrigger,fileId,fileData}:{onSaveTrigger:any,fileId:any,fi
             if ('requestIdleCallback' in window) {
                 (window as any).requestIdleCallback(() => {
                     setWhiteBoardData(excalidrawElements);
-                    scheduleSave(excalidrawElements);
+                    setWhiteBoardFiles(files);
+                    // Save both elements and files (for images)
+                    scheduleSave({ elements: excalidrawElements, files });
                 }, { timeout: 100 });
             } else {
                 // Fallback: defer to next frame
                 requestAnimationFrame(() => {
                     setWhiteBoardData(excalidrawElements);
-                    scheduleSave(excalidrawElements);
+                    setWhiteBoardFiles(files);
+                    scheduleSave({ elements: excalidrawElements, files });
                 });
             }
         } else {
-            // Non-drawing change (undo, redo, tool change, etc.)
+            // Non-drawing change (undo, redo, tool change, image paste, etc.)
             setWhiteBoardData(excalidrawElements);
-            scheduleSave(excalidrawElements);
+            setWhiteBoardFiles(files);
+            scheduleSave({ elements: excalidrawElements, files });
         }
     }, [scheduleSave]);
 
@@ -142,15 +150,22 @@ function Canvas({onSaveTrigger,fileId,fileData}:{onSaveTrigger:any,fileId:any,fi
    {fileData&& <Excalidraw
     excalidrawAPI={(api) => { excalidrawAPIRef.current = api; }}
     theme='light'
-    initialData={{
-        elements:fileData?.whiteboard&&JSON.parse(fileData?.whiteboard),
-        appState: {
-            // Ultra-thin stroke by default (thinner than Excalidraw's "thin" which is 1)
-            currentItemStrokeWidth: 0.5,
-            // Start with freedraw tool selected
-            activeTool: { type: 'freedraw', lastActiveTool: null, locked: false, customType: null },
-        }
-    }}
+    initialData={(() => {
+        // Parse saved data - could be old format (array) or new format ({ elements, files })
+        const savedData = fileData?.whiteboard ? JSON.parse(fileData.whiteboard) : null;
+        const isNewFormat = savedData && savedData.elements && !Array.isArray(savedData);
+
+        return {
+            elements: isNewFormat ? savedData.elements : savedData,
+            files: isNewFormat ? savedData.files : undefined,
+            appState: {
+                // Ultra-thin stroke by default (thinner than Excalidraw's "thin" which is 1)
+                currentItemStrokeWidth: 0.5,
+                // Start with freedraw tool selected
+                activeTool: { type: 'freedraw', lastActiveTool: null, locked: false, customType: null },
+            }
+        };
+    })()}
     onChange={handleChange}
     detectScroll={false}
     handleKeyboardGlobally={false}
